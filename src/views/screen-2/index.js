@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { useHistory } from 'react-router-dom'
 
@@ -9,15 +9,25 @@ import interactionPlugin from '@fullcalendar/interaction'
 
 import { INITIAL_EVENTS } from '../../utils/event-utils'
 
-const Screen2 = () => {
+const Screen2 = props => {
+    const { id, start_time, end_time } = props.location.state
     const history = useHistory()
 
     const [state, setState] = useState({ currentEvents: [] })
 
+    useEffect(() => {
+        console.log('props.location: ', props.location)
+    }, [])
 
     const handleEvents = events => setState({ ...state, currentEvents: events })
 
-    const handleDateClick = arg => history.push('/screen-3', [{title: 'Hello world!', date: arg.dateStr}])
+    const handleDateClick = arg => {
+        if(arg.date < new Date()){
+            alert('You cannot order this date!')
+        } else {
+            history.push('/screen-3', [{id, start_time, end_time, date: arg.date}])
+        }
+    }
 
     return (
         <div className='scheduleContainer'>
@@ -28,7 +38,7 @@ const Screen2 = () => {
                 dayCellContent={({ date, dayNumberText }) => (
                     <div className='abs-cont'>
                         <p>{dayNumberText}</p>
-                        <div className='abs'>+2</div>
+                        <div className='abs'></div>
                     </div>
                 )}
 

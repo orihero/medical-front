@@ -12,22 +12,25 @@ const emailText = 'Email address'
 
 const url = 'http://142.93.79.101/api'
 
-let workTime = {
-    startTime: new Date(),
-    endTime: new Date()
-}
+const months = [
+    ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'Deceber'],
+    ['Jan', 'Feb', 'Mar', 'Ap', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+]
 
-workTime.startTime.setHours(9, 0, 0, 0)
-workTime.endTime.setHours(18, 0, 0, 0)
+const Screen3 = props => {
+    const { id, date, start_time, end_time } = props.location.state[0]
+    let workTime = {
+        startTime: new Date(date),
+        endTime: new Date(date)
+    }
 
-const Screen3 = () => {
     const [state, setState] = useState({
         email: '',
         phone: '',
         comment: '',
         address: '',
         fullname: '',
-        branch_id: 3,
+        branch_id: id,
         arrived_at: null,
     })
     const [modalShow, setModalShow] = useState(false)
@@ -53,8 +56,8 @@ const Screen3 = () => {
     }
 
     const effect = () => {
-        console.log('startTime: ', workTime.startTime)
-        console.log('endTime: ', workTime.endTime)
+        workTime.startTime.setHours(parseInt(start_time.split(':')[0]), parseInt(start_time.split(':')[1]), 0, 0)
+        workTime.endTime.setHours(parseInt(end_time.split(':')[0]), parseInt(start_time.split(':')[1]), 0, 0)
         setTimes([...handleWorkTime(workTime.startTime, workTime.endTime)])
     }
 
@@ -70,7 +73,7 @@ const Screen3 = () => {
             address: '',
             comment: '',
             fullname: '',
-            branch_id: 3,
+            branch_id: id,
             arrived_at: null,
         })
     }
@@ -92,7 +95,7 @@ const Screen3 = () => {
                     address: '',
                     comment: '',
                     fullname: '',
-                    branch_id: 3,
+                    branch_id: id,
                     arrived_at: null,
                 })
                 setModalShow(false)
@@ -118,7 +121,9 @@ const Screen3 = () => {
         <>
             <div className='scheduleContainer'>
                 <div className='header'>
-                    <div className='title'>August 24 2020</div>
+                    <div className='title'>
+                        {`${months[0][date.getMonth()]}  ${date.getDate()} ${date.getFullYear()}`}
+                    </div>
                     <div>
                         <Button className='mr-1'>←</Button>
                         <Button className='ml-1'>→</Button>
@@ -134,7 +139,11 @@ const Screen3 = () => {
                     <tbody>
                         {times.map((item, index) => (
                             <tr key={index}>
-                                <td className='time'>{`${item.getHours()}:${item.getMinutes()}`}</td>
+                                <td className='time'>
+                                    {item.getMinutes() >= 10
+                                        ? `${item.getHours()}:${item.getMinutes()}`
+                                        : `${item.getHours()}:0${item.getMinutes()}`}
+                                </td>
                                 <td style={{display: 'flex', justifyContent: 'center'}}>
                                     <Button onClick={() => handleOpen(item)}>{idk1}</Button>
                                     {/* <Button variant="warning">{idk2}</Button> */}
