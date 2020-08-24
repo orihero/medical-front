@@ -56,7 +56,7 @@ const MapsScreen = ({ google }) => {
     const [stores, setStores] = useState([])
     const [isBoxShow, setIsBoxShow] = useState(false)
     const [selectedStore, setSelectedStore] = useState({})
-    const [position, setPosition] = useState({ lat: 40.6971494, lng: -74.2598655 })
+    const [position, setPosition] = useState({ lat: 40.6971494, lng: -74.0598655 })
     const [menuExpanded, setMenuExpanded] = useState(false)
 
     const effect = async () => {
@@ -69,7 +69,7 @@ const MapsScreen = ({ google }) => {
         }
     }
 
-    let toggleMenu=(toggle)=>{
+    let toggleMenu = (toggle) => {
         setMenuExpanded(toggle);
     }
 
@@ -85,6 +85,11 @@ const MapsScreen = ({ google }) => {
             lng: store.markercoords.split(',')[1]
         })
         setIsBoxShow(true)
+    }
+
+    const handleBoxClose = () => {
+        setIsBoxShow(false)
+        setSelectedStore({})
     }
 
     return (
@@ -138,9 +143,16 @@ const MapsScreen = ({ google }) => {
                                 </Card.Text>
                                 <Card.Text>
                                     <div className='mapsCardBold'>Address: </div>
-                                    {`${selectedStore.state} ${selectedStore.city} ${selectedStore.address} ${selectedStore.zip_code}`}
+                                    {`${selectedStore.state}, ${selectedStore.city}, ${selectedStore.address}, ${selectedStore.zip_code}`}
                                 </Card.Text>
                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <Button
+                                        className='mr-1'
+                                        variant="secondary"
+                                        onClick={handleBoxClose}
+                                    >
+                                        Close
+                                </Button>
                                     <Link
                                         to={{
                                             pathname: '/screen-2',
@@ -151,7 +163,7 @@ const MapsScreen = ({ google }) => {
                                             }
                                         }}
                                     >
-                                        <Button>Apply</Button>
+                                        <Button className='ml-1'>Apply</Button>
                                     </Link>
                                 </div>
                             </Card.Body>
