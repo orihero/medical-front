@@ -1,26 +1,20 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import { BrowserRouter, Route } from 'react-router-dom'
+
+import MapsScreen from './views/MapsScreen'
+import Screen2 from './views/screen-2'
+import Screen3 from './views/screen-3'
+
+const App = () => {
+
+    return(
+        <BrowserRouter>
+            <Route path='/' exact component={MapsScreen} />
+            <Route path='/screen-2' component={Screen2} />
+            <Route path='/screen-3' component={Screen3} />
+        </BrowserRouter>
+    )
 }
 
-export default App;
+export default App
