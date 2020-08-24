@@ -5,6 +5,9 @@ import { Link } from 'react-router-dom'
 
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
+import Navbar from 'react-bootstrap/Navbar'
+import Container from 'react-bootstrap/Container'
+import Nav from 'react-bootstrap/Nav'
 
 
 const url = 'http://142.93.79.101/api'
@@ -53,16 +56,21 @@ const MapsScreen = ({ google }) => {
     const [stores, setStores] = useState([])
     const [isBoxShow, setIsBoxShow] = useState(false)
     const [selectedStore, setSelectedStore] = useState({})
-    const [position, setPosition] = useState({ lat: 40.6971494, lng: -74.2598655})
+    const [position, setPosition] = useState({ lat: 40.6971494, lng: -74.2598655 })
+    const [menuExpanded, setMenuExpanded] = useState(false)
 
     const effect = async () => {
-        try{
+        try {
             let { data } = await axios.get(`${url}/branches`)
 
             setStores([...data])
-        } catch(err){
+        } catch (err) {
             console.log('error: ', err)
         }
+    }
+
+    let toggleMenu=(toggle)=>{
+        setMenuExpanded(toggle);
     }
 
     useEffect(() => {
@@ -79,8 +87,21 @@ const MapsScreen = ({ google }) => {
         setIsBoxShow(true)
     }
 
-    return(
+    return (
         <>
+            <Container>
+                <Navbar collapseOnSelect expand="lg" variant="light" bg="light" fixed="top" expanded={menuExpanded} onToggle={toggleMenu}>
+                    <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+                    <Navbar.Collapse id="responsive-navbar-nav">
+                        <Nav className="mr-auto">
+                            {stores.map((e) => {
+
+                                return <Navbar.Brand onClick={() => onMarkerClick(store)}>{e.name}</Navbar.Brand>
+                            })}
+                        </Nav>
+                    </Navbar.Collapse>
+                </Navbar>
+            </Container>
             <Map
                 zoom={10.5}
                 google={google}
@@ -98,46 +119,46 @@ const MapsScreen = ({ google }) => {
                     />
                 ))}
             </Map>
-        <div className='mapsContainer'>
-            {isBoxShow ? (
-                <div className='mapsCard'>
-                    <Card>
-                        <Card.Body>
-                            <Card.Text>
-                                <div className='mapsCardBold'>Name: </div>
-                                {selectedStore.name}
-                            </Card.Text>
-                            <Card.Text>
-                                <div className='mapsCardBold'>Number: </div>
-                                {`${selectedStore.phone}`}
-                            </Card.Text>
-                            <Card.Text>
-                                <div className='mapsCardBold'>Fax: </div>
-                                {`${selectedStore.fax}`}
-                            </Card.Text>
-                            <Card.Text>
-                                <div className='mapsCardBold'>Address: </div>
-                                {`${selectedStore.state} ${selectedStore.city} ${selectedStore.address} ${selectedStore.zip_code}`}
-                            </Card.Text>
-                            <div style={{display: 'flex', justifyContent: 'center'}}>
-                                <Link
-                                    to={{
-                                        pathname: '/screen-2',
-                                        state: {
-                                            id: selectedStore.id,
-                                            end_time: selectedStore.end_time,
-                                            start_time: selectedStore.start_time,
-                                        }
-                                    }}
-                                >
-                                    <Button>Apply</Button>
-                                </Link>
-                            </div>
-                        </Card.Body>
-                    </Card>
-                </div>
-            ) : null}
-        </div>
+            <div className='mapsContainer'>
+                {isBoxShow ? (
+                    <div className='mapsCard'>
+                        <Card>
+                            <Card.Body>
+                                <Card.Text>
+                                    <div className='mapsCardBold'>Name: </div>
+                                    {selectedStore.name}
+                                </Card.Text>
+                                <Card.Text>
+                                    <div className='mapsCardBold'>Number: </div>
+                                    {`${selectedStore.phone}`}
+                                </Card.Text>
+                                <Card.Text>
+                                    <div className='mapsCardBold'>Fax: </div>
+                                    {`${selectedStore.fax}`}
+                                </Card.Text>
+                                <Card.Text>
+                                    <div className='mapsCardBold'>Address: </div>
+                                    {`${selectedStore.state} ${selectedStore.city} ${selectedStore.address} ${selectedStore.zip_code}`}
+                                </Card.Text>
+                                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <Link
+                                        to={{
+                                            pathname: '/screen-2',
+                                            state: {
+                                                id: selectedStore.id,
+                                                end_time: selectedStore.end_time,
+                                                start_time: selectedStore.start_time,
+                                            }
+                                        }}
+                                    >
+                                        <Button>Apply</Button>
+                                    </Link>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </div>
+                ) : null}
+            </div>
         </>
     )
 }
