@@ -2,20 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { Button, Table, Modal, Form } from 'react-bootstrap'
 import axios from 'axios'
 
-const idk1 = 'Apply'
-const idk2 = 'Occupied'
+import { url, months, Screen3Str } from '../../constants'
 
-const fullnameText = 'Full name'
-const phoneText = 'Phone Number'
-const addressText = 'Address'
-const emailText = 'Email address'
-
-const url = 'http://142.93.79.101/api'
-
-const months = [
-    ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'Deceber'],
-    ['Jan', 'Feb', 'Mar', 'Ap', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-]
+const { idk1, idk2, fullnameText, phoneText, addressText, emailText } = Screen3Str
 
 const Screen3 = props => {
     const { id, date, start_time, end_time } = props.location.state[0]
@@ -36,6 +25,7 @@ const Screen3 = props => {
     const [modalShow, setModalShow] = useState(false)
     const [errorText, setErrorText] = useState({})
     const [times, setTimes] = useState([])
+    const [occupiedTimes, setOccupiedTimes] = useState([])
 
     const handleWorkTime = (start, end) => {
         let arr = []
@@ -55,7 +45,19 @@ const Screen3 = props => {
         return arr
     }
 
-    const effect = () => {
+    const effect = async () => {
+        let startDay = new Date(date)
+        let endDay = new Date(date)
+        endDay.setDate(endDay.getDate() + 1)
+
+        try{
+            const { data } = await axios.get(`${url}/requests?branch_id=${id}&start_day=${startDay.toLocaleDateString()}&end_day=${endDay.toLocaleDateString()}`)
+
+            setOccupiedTimes([...data.map((s, i) => new Date(s.arrived_at))])
+        } catch(err){
+            console.log('err:', err)
+        }
+
         workTime.startTime.setHours(parseInt(start_time.split(':')[0]), parseInt(start_time.split(':')[1]), 0, 0)
         workTime.endTime.setHours(parseInt(end_time.split(':')[0]), parseInt(start_time.split(':')[1]), 0, 0)
         setTimes([...handleWorkTime(workTime.startTime, workTime.endTime)])
@@ -145,8 +147,11 @@ const Screen3 = props => {
                                         : `${item.getHours()}:0${item.getMinutes()}`}
                                 </td>
                                 <td style={{display: 'flex', justifyContent: 'center'}}>
-                                    <Button onClick={() => handleOpen(item)}>{idk1}</Button>
-                                    {/* <Button variant="warning">{idk2}</Button> */}
+                                    {occupiedTimes.find(occupiedTime => (occupiedTime.getHours() === item.getHours()) && (occupiedTime.getMinutes() === item.getMinutes())) ? (
+                                        <Button variant="warning" disabled={true}>{idk2}</Button>
+                                    ) : (
+                                        <Button onClick={() => handleOpen(item)}>{idk1}</Button>
+                                    )}
                                 </td>
                             </tr>
                         ))}

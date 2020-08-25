@@ -3,63 +3,32 @@ import axios from 'axios';
 import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
 import { Link } from 'react-router-dom';
 
+import LoadingButton from 'react-bootstrap-button-loader'
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 
-const url = 'http://142.93.79.101/api';
+import { MdLocationOn } from 'react-icons/md'
+
+import { url } from '../../constants'
 
 const mapStyles = {
 	width: '100%',
 	height: '100vh',
 };
 
-// const stores = [
-//     {
-//         name: 'Store 1',
-//         location: {lat: 48.00, lng: -122.00},
-//         data: {
-//             telNumber: '+998999713258',
-//             address: 'Store 1 address'
-//         }
-//     },
-//     {
-//         name: 'Store 2',
-//         location: {lat: 48.00, lng: -120.00},
-//         data: {
-//             telNumber: '+998909336800',
-//             address: 'Store 2 address'
-//         },
-//     },
-//     {
-//         name: 'Store 3',
-//         location: {lat: 47.00, lng: -120.00},
-//         data: {
-//             telNumber: '+998903575657',
-//             address: 'Store 3 address'
-//         },
-//     },
-//     {
-//         name: 'Store 4',
-//         location: {lat: 47.00, lng: -122.00},
-//         data: {
-//             telNumber: '+998977615657',
-//             address: 'Store 4 address'
-//         }
-//     }
-// ]
-
 const MapsScreen = ({ google }) => {
 	const [stores, setStores] = useState([]);
-	const [isBoxShow, setIsBoxShow] = useState(false);
+	const [isBoxShow, setIsBoxShow] = useState({b: true});
 	const [selectedStore, setSelectedStore] = useState({});
 	const [position, setPosition] = useState({
 		lat: 40.6971494,
 		lng: -74.0598655,
 	});
-	const [menuExpanded, setMenuExpanded] = useState(false);
+	const [loading, setLoading] = useState(false)
+	const [nearestBranch, setNearestBranch] = useState(null)
 
 	const effect = async () => {
 		try {
@@ -71,61 +40,44 @@ const MapsScreen = ({ google }) => {
 		}
 	};
 
-	let toggleMenu = (toggle) => {
-		setMenuExpanded(toggle);
-	};
-
 	useEffect(() => {
 		effect();
 	}, []);
 
 	const onMarkerClick = (store, toggle) => {
-		if (toggle) {
-			toggleMenu();
-		}
-		setIsBoxShow(false);
+		setIsBoxShow({});
 		setSelectedStore(store);
 		setPosition({
 			lat: store.markercoords.split(',')[0],
 			lng: store.markercoords.split(',')[1],
 		});
-		setIsBoxShow(true);
+		setIsBoxShow({a: true});
 	};
 
 	const handleBoxClose = () => {
-		setIsBoxShow(false);
+		setIsBoxShow({b: true});
 		setSelectedStore({});
 	};
 
+	const handleLocateMe = (e) => {
+		if('geolocation' in navigator){
+			navigator.geolocation.getCurrentPosition(position => {
+				console.log('position: ', position)
+				console.log("Latitude is :", position.coords.latitude);
+				console.log("Longitude is :", position.coords.longitude);
+			});
+		} else {
+			console.log('Not Avalaible')
+		}
+		setLoading(true)
+		setTimeout(() => {
+			setNearestBranch(stores[0])
+			setLoading(false)
+		}, 3000);
+	}
+
 	return (
 		<>
-			<Container>
-				<Navbar
-					aria-controls='sidebar'
-					className={'sidebar-wrapper'}
-					collapseOnSelect
-					expand='lg'
-					variant='light'
-					bg='light'
-					fixed='top'
-					expanded={menuExpanded}
-					onToggle={toggleMenu}>
-					<Navbar.Toggle aria-controls='responsive-navbar-nav' />
-					<Navbar.Collapse id='responsive-navbar-nav'>
-						<Nav className='mr-auto'>
-							{stores.map((e) => {
-								return (
-									<Navbar.Brand
-										href='#'
-										onClick={() => onMarkerClick(e, true)}>
-										{e.name}
-									</Navbar.Brand>
-								);
-							})}
-						</Nav>
-					</Navbar.Collapse>
-				</Navbar>
-			</Container>
 			<Map
 				zoom={10.5}
 				google={google}
@@ -146,7 +98,57 @@ const MapsScreen = ({ google }) => {
 				))}
 			</Map>
 			<div className='mapsContainer'>
-				{isBoxShow ? (
+				{isBoxShow.b ? (
+					<div className='absoluteCard'>
+						{loading ? (
+							<div style={{display: 'flex', justifyContent: 'space-between'}}>
+								<LoadingButton variant='secondary' loading={true} />
+								<Button variant='secondary' onClick={() => setIsBoxShow({})}>x</Button>
+							</div>
+						) : (
+							<div style={{display: 'flex', justifyContent: 'space-between'}}>
+								<Button
+									variant='secondary'
+									onClick={handleLocateMe}
+								>
+									<MdLocationOn />
+									{' Locate me'}
+								</Button>
+								<Button variant='secondary' onClick={() => setIsBoxShow({})}>x</Button>
+							</div>
+						)}
+						{nearestBranch ? (
+							<div className='resultLocationsBox'>
+								<p>Nearest branch to you</p>
+								<div
+									className='branchCard'
+									onClick={() => onMarkerClick(nearestBranch)}
+								>
+									<div className='mapsCardBold'>{nearestBranch.name}</div>
+									<div>
+										{`${nearestBranch.state}, ${nearestBranch.city}, ${nearestBranch.address}, ${nearestBranch.zip_code}`}
+									</div>
+								</div>
+							</div>
+						) : null}
+						<div className='resultLocationsBox'>
+							<p>Branches</p>
+							{stores.map((store, index) => (
+								<div
+									key={index}
+									className='branchCard'
+									onClick={() => onMarkerClick(store)}
+								>
+									<div className='mapsCardBold'>{store.name}</div>
+									<div>
+										{`${store.state}, ${store.city}, ${store.address}, ${store.zip_code}`}
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
+				) : null}
+				{isBoxShow.a ? (
 					<div className='mapsCard'>
 						<Card>
 							<Card.Body>

@@ -23,18 +23,55 @@ code {
 .mapsContainer{
   width: 100%;
   height: 100vh;
-  display: flex;
   overflow: hidden;
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: center
+  /* display: flex; */
+  /* flex-direction: row; */
+  /* align-items: flex-end; */
+  /* justify-content: center */
+}
+
+.mapsContainer .absoluteCard{
+  width: 300px;
+  padding: 20px;
+  height: 500px;
+  overflow-y: auto;
+  border-radius: 10px;
+  justify-self: start;
+  background-color: #fff;
+  box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.75);
+  transform: translateY(20px) translateX(30px);
+}
+
+.mapsContainer .absoluteCard .resultLocationsBox{
+  margin-top: 1em;
+  /* border: 1px solid black; */
+  /* background-color: aqua; */
+}
+
+.mapsContainer .absoluteCard .resultLocationsBox p{
+  font-size: 1.4em;
+  font-weight: 600;
+  background-color: #f1f1f1;
+}
+
+.mapsContainer .absoluteCard .resultLocationsBox .branchCard{
+  /* border: 1px solid gray; */
+  margin-top: 1em;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.mapsContainer .absoluteCard .resultLocationsBox .branchCard:hover{
+  background-color: #f1f1f1;
 }
 
 .mapsCard{
   width: 300px;
   font-size: 1em;
-  margin-bottom: 10vh;
-  transform: translateY(0px);
+  margin: 0 auto;
+  /* margin-bottom: 10vh; */
+  /* align-self: flex-end; */
+  transform: translateY(90%);
   background-color: aquamarine;
   animation: boxAnimate 0.7s cubic-bezier(.06, .77, .81, 1.37);
 }
@@ -120,12 +157,12 @@ code {
 
 @keyframes boxAnimate {
   0%{
-      transform: translateY(200px);
+      transform: translateY(190%);
   }
   90%{
-      transform: translateY(-20px);
+      transform: translateY(100%);
   }
   100%{
-      transform: translateY(0);
+      transform: translateY(90%);
   }
 }
