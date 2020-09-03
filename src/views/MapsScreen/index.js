@@ -14,6 +14,16 @@ import validator from 'validator';
 import swal from 'sweetalert';
 import PlacesAutocomplete from 'react-places-autocomplete';
 
+let weekDays = [
+	'Sunday',
+	'Monday',
+	'Tuesday',
+	'Wednesday',
+	'Thursday',
+	'Friday',
+	'Saturday',
+];
+
 function distance(lat1, lon1, lat2, lon2, unit = 'K') {
 	if (lat1 == lat2 && lon1 == lon2) {
 		return 0;
@@ -83,7 +93,7 @@ const MapsScreen = ({ google }) => {
 	const handleWorkTime = (start, end) => {
 		let arr = [];
 		let tmpTime = start;
-
+		console.log({ tmps: tmpTime < end, start, end });
 		while (tmpTime < end) {
 			arr = [...arr, new Date(tmpTime)];
 
@@ -101,6 +111,10 @@ const MapsScreen = ({ google }) => {
 		}
 
 		return arr;
+	};
+
+	let toggleMenu = () => {
+		setIsBoxShow({ b: !isBoxShow.b });
 	};
 
 	const effect = async () => {
@@ -135,26 +149,41 @@ const MapsScreen = ({ google }) => {
 			Object.keys(selectedStore).length > 0 &&
 			state.date
 		) {
-			let { start_time, end_time } = selectedStore;
 			let { date } = state;
+			let start_time = new Date(
+				selectedStore[
+					weekDays[new Date(date).getDay()].toLowerCase() + '_start'
+				]
+			);
+			let end_time = new Date(
+				selectedStore[
+					weekDays[new Date(date).getDay()].toLowerCase() + '_end'
+				]
+			);
+			// let { start_time, end_time } = selectedStore;
+			let dDate = new Date(date);
 			let workTime = {
 				startTime: new Date(date),
 				endTime: new Date(date),
 			};
-			workTime.startTime.setHours(
-				parseInt(start_time.split(':')[0]),
-				parseInt(start_time.split(':')[1]),
-				0,
-				0
-			);
-			workTime.endTime.setHours(
-				parseInt(end_time.split(':')[0]),
-				parseInt(start_time.split(':')[1]),
-				0,
-				0
-			);
-			console.log({ workTime });
-			setTimes([...handleWorkTime(workTime.startTime, workTime.endTime)]);
+			workTime.startTime.setHours(start_time.getHours());
+			workTime.startTime.setMinutes(start_time.getMinutes());
+			workTime.endTime.setHours(end_time.getHours() - 5);
+			workTime.endTime.setMinutes(end_time.getMinutes());
+			// workTime.startTime.setHours(
+			// 	parseInt(start_time.split(':')[0]),
+			// 	parseInt(start_time.split(':')[1]),
+			// 	0,
+			// 	0
+			// );
+			// workTime.endTime.setHours(
+			// 	parseInt(end_time.split(':')[0]),
+			// 	parseInt(start_time.split(':')[1]),
+			// 	0,
+			// 	0
+			// );
+			console.log({ start_time, end_time });
+			setTimes([...handleWorkTime(start_time, end_time)]);
 			checkOccupations();
 		}
 	}, [selectedStore, state.date]);
@@ -202,6 +231,11 @@ const MapsScreen = ({ google }) => {
 				let split = state.time.split(':');
 				arrived_at.setHours(parseInt(split[0]));
 				arrived_at.setMinutes(parseInt(split[1]));
+				// console.log({
+				// 	utc: arrived_at.toUTCString(),
+				// 	loc:
+				// 		,
+				// });
 				phone = phone
 					.replace(/\s/g, '')
 					.replace('(', '')
@@ -214,7 +248,10 @@ const MapsScreen = ({ google }) => {
 					address,
 					comment,
 					fullname,
-					arrived_at,
+					arrived_at:
+						arrived_at.toLocaleDateString() +
+						' ' +
+						arrived_at.toLocaleTimeString(),
 					branch_id,
 				};
 				console.log('state: ', state, { arrived_at });
@@ -232,8 +269,16 @@ const MapsScreen = ({ google }) => {
 				setModalShow(false);
 				const willDelete = await swal({
 					title: 'Success',
-					text:
-						'Your appointment has been received! Our dispatch team will contact with you soon!',
+					text: `Thank you for scheduling your appointment for Covid-19 testing.
+the address for your testing is:
+
+Center Name: ${selectedStore.name}
+Center Address: ${selectedStore.address}
+Scheduled Visit Time: ${arrived_at}
+
+Please look for our tent on the parking lot of the address provided.
+
+Looking forward to servicing you.`,
 					icon: 'success',
 				});
 			} catch (err) {
@@ -324,6 +369,23 @@ const MapsScreen = ({ google }) => {
 				))}
 			</Map>
 			<div className='mapsContainer'>
+				<div className='burger-button' onClick={toggleMenu}>
+					<svg
+						xmlns='http://www.w3.org/2000/svg'
+						width='24'
+						height='24'
+						viewBox='0 0 24 24'
+						fill='none'
+						stroke='black'
+						stroke-width='2'
+						stroke-linecap='round'
+						stroke-linejoin='round'
+						class='feather feather-menu'>
+						<line x1='3' y1='12' x2='21' y2='12'></line>
+						<line x1='3' y1='6' x2='21' y2='6'></line>
+						<line x1='3' y1='18' x2='21' y2='18'></line>
+					</svg>
+				</div>
 				{isBoxShow.b ? (
 					<div className='absoluteCard'>
 						{loading ? (
@@ -396,61 +458,75 @@ const MapsScreen = ({ google }) => {
 						</div>
 					</div>
 				) : null}
-				{isBoxShow.a ? (
-					<div className='mapsCard'>
-						<Card>
-							<Card.Body>
-								<Card.Text>
-									<div className='mapsCardBold'>Name: </div>
-									{selectedStore.name}
-								</Card.Text>
-								<Card.Text>
-									<div className='mapsCardBold'>Number: </div>
-									{`${selectedStore.phone}`}
-								</Card.Text>
-								<Card.Text>
-									<div className='mapsCardBold'>Fax: </div>
-									{`${selectedStore.fax}`}
-								</Card.Text>
-								<Card.Text>
-									<div className='mapsCardBold'>
-										Address:{' '}
-									</div>
-									{`${selectedStore.state}, ${selectedStore.city}, ${selectedStore.address}, ${selectedStore.zip_code}`}
-								</Card.Text>
-								<div
-									style={{
-										display: 'flex',
-										justifyContent: 'center',
-									}}>
-									<Button
-										className='mr-1'
-										variant='secondary'
-										onClick={handleBoxClose}>
-										Close
-									</Button>
-									{/* <Link
-										to={{
-											pathname: '/screen-2',
-											state: {
-												id: selectedStore.id,
-												end_time:
-													selectedStore.end_time,
-												start_time:
-													selectedStore.start_time,
-											},
-										}}> */}
-									<Button
-										onClick={onApllyClick}
-										className='ml-1'>
-										Apply
-									</Button>
-									{/* </Link> */}
-								</div>
-							</Card.Body>
-						</Card>
-					</div>
-				) : null}
+				<Modal show={isBoxShow.a}>
+					<Card>
+						<Card.Body>
+							<Card.Text>
+								<div className='mapsCardBold'>Name: </div>
+								{selectedStore.name}
+							</Card.Text>
+							<Card.Text>
+								<div className='mapsCardBold'>Number: </div>
+								{`${selectedStore.phone}`}
+							</Card.Text>
+							<Card.Text>
+								<div className='mapsCardBold'>Fax: </div>
+								{`${selectedStore.fax}`}
+							</Card.Text>
+							<Card.Text>
+								<div className='mapsCardBold'>Address: </div>
+								{`${selectedStore.state}, ${selectedStore.city}, ${selectedStore.address}, ${selectedStore.zip_code}`}
+							</Card.Text>
+							<Card.Text>
+								<div className='mapsCardBold'>Schedule: </div>
+								{Object.keys(selectedStore).map((key) => {
+									if (
+										key
+											.toLocaleLowerCase()
+											.indexOf('works') !== -1 &&
+										!!selectedStore[key]
+									) {
+										let day = key.split('_')[0];
+										return (
+											<p
+												style={{
+													textTransform: 'capitalize',
+												}}>
+												{day} :{' '}
+												{new Date(
+													selectedStore[
+														day + '_start'
+													]
+												).toLocaleTimeString()}{' '}
+												-{' '}
+												{new Date(
+													selectedStore[day + '_end']
+												).toLocaleTimeString()}{' '}
+											</p>
+										);
+									}
+									return null;
+								})}
+							</Card.Text>
+							<div
+								style={{
+									display: 'flex',
+									justifyContent: 'center',
+								}}>
+								<Button
+									className='mr-1'
+									variant='secondary'
+									onClick={handleBoxClose}>
+									Close
+								</Button>
+								<Button onClick={onApllyClick} className='ml-1'>
+									Apply
+								</Button>
+								{/* </Link> */}
+							</div>
+						</Card.Body>
+					</Card>
+				</Modal>
 			</div>
 			<Modal show={modalShow} onHide={handleClose}>
 				<Modal.Header closeButton>
@@ -566,14 +642,25 @@ const MapsScreen = ({ google }) => {
 							id='example-datepicker'
 							value={state.date}
 							onChange={(date) => {
+								let dayInNY = new Date(date).toLocaleString(
+									'en-US',
+									{
+										timeZone: 'America/New_York',
+									}
+								);
 								console.log(
 									new Date(date) < new Date(Date.now),
 									{
 										date,
-										newDate: new Date(Date.now()),
+										todaysDate: new Date(Date.now()),
+										dayInNY,
 									}
 								);
-								if (new Date(date) < new Date(Date.now())) {
+
+								if (
+									new Date(date).getDate() <
+									new Date(dayInNY).getDate()
+								) {
 									alert(
 										'You cannot make an appointment on this day!'
 									);
@@ -583,7 +670,19 @@ const MapsScreen = ({ google }) => {
 									});
 									return;
 								}
-								setState({ ...state, date });
+								if (
+									selectedStore[
+										weekDays[
+											new Date(date).getDay()
+										].toLowerCase() + '_works'
+									]
+								)
+									setState({ ...state, date });
+								else {
+									alert(
+										'You cannot make an appointment on this day!'
+									);
+								}
 							}}
 						/>
 						{errorText.date ? (
@@ -650,7 +749,7 @@ const MapsScreen = ({ google }) => {
 								loading,
 							}) => (
 								<Form.Group controlId='formBasicAddress'>
-									<Form.Label>{addressText}</Form.Label>
+									<Form.Label>Enter your address</Form.Label>
 									<Form.Control
 										type='text'
 										value={state.address}

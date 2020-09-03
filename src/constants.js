@@ -1,4 +1,4 @@
-export const url = 'http://142.93.79.101/api';
+export const url = 'https://appointment.accureference.com//api';
 
 export const months = [
 	[
