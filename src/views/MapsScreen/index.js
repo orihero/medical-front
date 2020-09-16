@@ -255,7 +255,8 @@ const MapsScreen = ({ google }) => {
 					branch_id,
 				};
 				console.log('state: ', state, { arrived_at });
-				await axios.post(`${url}/requests`, submitData);
+				let res = await axios.post(`${url}/requests`, submitData);
+				console.log('res: ', res)
 				setErrorText({});
 				setState({
 					email: '',
@@ -281,6 +282,10 @@ Please look for our tent on the parking lot of the address provided.
 Looking forward to servicing you.`,
 					icon: 'success',
 				});
+				if(willDelete){
+					console.log("PRESSES OK")
+					window.location.href = 'http://localhost:3001/appointment?requestId=80'
+				}
 			} catch (err) {
 				setErrorText({ request: true });
 			}
@@ -530,7 +535,7 @@ Looking forward to servicing you.`,
 			</div>
 			<Modal show={modalShow} onHide={handleClose}>
 				<Modal.Header closeButton>
-					<Modal.Title>Your information</Modal.Title>
+					<Modal.Title>Your SLLL information</Modal.Title>
 				</Modal.Header>
 
 				<Modal.Body>
