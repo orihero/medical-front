@@ -255,8 +255,9 @@ const MapsScreen = ({ google }) => {
 					branch_id,
 				};
 				console.log('state: ', state, { arrived_at });
+				console.log('submitData: ', submitData)
 				let res = await axios.post(`${url}/requests`, submitData);
-				console.log('res: ', res)
+				console.log('res: ', res.data)
 				setErrorText({});
 				setState({
 					email: '',
@@ -284,7 +285,7 @@ Looking forward to servicing you.`,
 				});
 				if(willDelete){
 					console.log("PRESSES OK")
-					window.location.href = 'http://localhost:3001/appointment?requestId=80'
+					window.location.href = `http://localhost:3000/appointment?requestId=${res.data.id}`
 				}
 			} catch (err) {
 				setErrorText({ request: true });
