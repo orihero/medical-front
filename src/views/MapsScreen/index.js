@@ -255,9 +255,9 @@ const MapsScreen = ({ google }) => {
 					branch_id,
 				};
 				console.log('state: ', state, { arrived_at });
-				console.log('submitData: ', submitData)
+				console.log('submitData: ', submitData);
 				let res = await axios.post(`${url}/requests`, submitData);
-				console.log('res: ', res.data)
+				console.log('res: ', res.data);
 				setErrorText({});
 				setState({
 					email: '',
@@ -283,9 +283,9 @@ Please look for our tent on the parking lot of the address provided.
 Looking forward to servicing you.`,
 					icon: 'success',
 				});
-				if(willDelete){
-					console.log("PRESSES OK")
-					window.location.href = `http://localhost:3000/appointment?requestId=${res.data.id}`
+				if (willDelete) {
+					console.log('PRESSES OK');
+					window.location.href = `https://covid.accureference.com/appointment?requestId=${res.data.id}`;
 				}
 			} catch (err) {
 				setErrorText({ request: true });
