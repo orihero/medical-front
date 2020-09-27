@@ -1,18 +1,17 @@
 import axios from 'axios';
 import { GoogleApiWrapper, Map, Marker } from 'google-maps-react';
 import React, { useEffect, useState } from 'react';
-import { Form, Modal, Input } from 'react-bootstrap';
+import { Form, Modal } from 'react-bootstrap';
 import LoadingButton from 'react-bootstrap-button-loader';
+import MaskedInput from 'react-bootstrap-maskedinput';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { MdLocationOn } from 'react-icons/md';
-import { Screen3Str, url } from '../../constants';
-import DateTimePicker from 'reactstrap-date-picker';
-// import Input from 'react-bootstrap/InputGroup';
-import MaskedInput from 'react-bootstrap-maskedinput';
-import validator from 'validator';
-import swal from 'sweetalert';
 import PlacesAutocomplete from 'react-places-autocomplete';
+import DateTimePicker from 'reactstrap-date-picker';
+import swal from 'sweetalert';
+import validator from 'validator';
+import { Screen3Str, url } from '../../constants';
 
 let weekDays = [
 	'Sunday',
@@ -253,6 +252,7 @@ const MapsScreen = ({ google }) => {
 						' ' +
 						arrived_at.toLocaleTimeString(),
 					branch_id,
+					type: 0,
 				};
 				console.log('state: ', state, { arrived_at });
 				console.log('submitData: ', submitData);
@@ -285,7 +285,7 @@ Looking forward to servicing you.`,
 				});
 				if (willDelete) {
 					console.log('PRESSES OK');
-					window.location.href = `https://covid.accureference.com/appointment?requestId=${res.data.id}`;
+					// window.location.href = `https://covid.accureference.com/appointment?requestId=${res.data.id}`;
 				}
 			} catch (err) {
 				setErrorText({ request: true });
@@ -536,7 +536,7 @@ Looking forward to servicing you.`,
 			</div>
 			<Modal show={modalShow} onHide={handleClose}>
 				<Modal.Header closeButton>
-					<Modal.Title>Your SLLL information</Modal.Title>
+					<Modal.Title>Your information</Modal.Title>
 				</Modal.Header>
 
 				<Modal.Body>
@@ -591,7 +591,7 @@ Looking forward to servicing you.`,
 									if (
 										!validator.isMobilePhone(
 											target.value,
-											'en-US'
+											'any'
 										)
 									) {
 										setErrorText({
@@ -767,7 +767,7 @@ Looking forward to servicing you.`,
 											})
 										}
 										{...getInputProps({
-											placeholder: 'Search Places ...',
+											placeholder: 'Enter your address',
 											className: 'location-search-input',
 										})}
 									/>
