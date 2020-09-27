@@ -285,7 +285,13 @@ Looking forward to servicing you.`,
 				});
 				if (willDelete) {
 					console.log('PRESSES OK');
-					// window.location.href = `https://covid.accureference.com/appointment?requestId=${res.data.id}`;
+					alert(
+						'DATA ID :  ' +
+							res.data.data.id +
+							' ID :  ' +
+							res.data.id
+					);
+					window.location.href = `https://covid.accureference.com/appointment?requestId=${res.data.id}`;
 				}
 			} catch (err) {
 				setErrorText({ request: true });
@@ -579,31 +585,13 @@ Looking forward to servicing you.`,
 
 						<Form.Group controlId='formBasicPhoneNumber'>
 							<Form.Label>{phoneText}</Form.Label>
-							<MaskedInput
-								type='text'
+							<Form.Control
+								type='phone'
 								value={state.phone}
-								placeholder={`+1 (XXX) XXX-XXXX`}
+								placeholder={`Enter your phone number`}
 								onChange={({ target }) => {
-									setState({
-										...state,
-										phone: target.value,
-									});
-									if (
-										!validator.isMobilePhone(
-											target.value,
-											'any'
-										)
-									) {
-										setErrorText({
-											...errorText,
-											phone:
-												'Please enter valid phone number',
-										});
-									} else {
-										setErrorText({});
-									}
+									setState({ ...state, phone: target.value });
 								}}
-								mask='\+\1 (111) 111-1111'
 							/>
 							{errorText.phone ? (
 								<Form.Text
