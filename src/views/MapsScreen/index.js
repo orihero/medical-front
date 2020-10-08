@@ -271,16 +271,23 @@ const MapsScreen = ({ google }) => {
 				setModalShow(false);
 				const willDelete = await swal({
 					title: 'Success',
-					text: `Thank you for scheduling your appointment for Covid-19 testing.
-the address for your testing is:
+					text: `Thank you for Scheduling your Appointment for COVID-19 Testing
+					
+					We are checking availability, You will receive confirmation shortly.
+					
+					Thank you!
+					
+					We look forward to servicing you.`,
+// 					text: `Thank you for scheduling your appointment for Covid-19 testing.
+// the address for your testing is:
 
-Center Name: ${selectedStore.name}
-Center Address: ${selectedStore.address}
-Scheduled Visit Time: ${arrived_at}
+// Center Name: ${selectedStore.name}
+// Center Address: ${selectedStore.address}
+// Scheduled Visit Time: ${arrived_at}
 
-Please look for our tent on the parking lot of the address provided.
+// Please look for our tent on the parking lot of the address provided.
 
-Looking forward to servicing you.`,
+// Looking forward to servicing you.`,
 					icon: 'success',
 				});
 				if (willDelete) {
