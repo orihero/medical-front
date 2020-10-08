@@ -284,13 +284,6 @@ Looking forward to servicing you.`,
 					icon: 'success',
 				});
 				if (willDelete) {
-					console.log('PRESSES OK');
-					alert(
-						'DATA ID :  ' +
-							res.data.data.id +
-							' ID :  ' +
-							res.data.id
-					);
 					window.location.href = `https://covid.accureference.com/appointment?requestId=${res.data.id}`;
 				}
 			} catch (err) {
@@ -585,14 +578,29 @@ Looking forward to servicing you.`,
 
 						<Form.Group controlId='formBasicPhoneNumber'>
 							<Form.Label>{phoneText}</Form.Label>
+
 							<Form.Control
 								type='phone'
-								value={state.phone}
+								inputMode='tel'
+								value={`${state.phone}`}
 								placeholder={`Enter your phone number`}
+								onFocus={() =>
+									setState({ ...state, phone: '+1' })
+								}
 								onChange={({ target }) => {
+									if (
+										target.value &&
+										!target.value.startsWith('+')
+									) {
+										setState({
+											...state,
+											phone: '+1' + target.value,
+										});
+										return;
+									}
 									setState({ ...state, phone: target.value });
 								}}
-							/>
+								maxLength={12}></Form.Control>
 							{errorText.phone ? (
 								<Form.Text
 									className='mt-2'
@@ -636,12 +644,13 @@ Looking forward to servicing you.`,
 							id='example-datepicker'
 							value={state.date}
 							onChange={(date) => {
-								let dayInNY = new Date(date).toLocaleString(
-									'en-US',
-									{
-										timeZone: 'America/New_York',
-									}
-								);
+								let dayInNY = new Date(
+									Date.now()
+								).toLocaleString('en-US', {
+									timeZone: 'America/New_York',
+								});
+								let dateNY = new Date(dayInNY);
+								dateNY.setDate(dateNY.getDate() + 1);
 								console.log(
 									new Date(date) < new Date(Date.now),
 									{
@@ -652,8 +661,7 @@ Looking forward to servicing you.`,
 								);
 
 								if (
-									new Date(date).getDate() <
-									new Date(dayInNY).getDate()
+									new Date(date).getDate() < dateNY.getDate()
 								) {
 									alert(
 										'You cannot make an appointment on this day!'
