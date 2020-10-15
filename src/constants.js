@@ -36,6 +36,8 @@ export const Screen3Str = {
 	idk2: 'Occupied',
 
 	fullnameText: 'Full name*',
+	firstnameText: 'First name*',
+	lastnameText: 'Last name*',
 	phoneText: 'Phone Number*',
 	addressText: 'Address',
 	emailText: 'Email address*',
