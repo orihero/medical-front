@@ -55,6 +55,8 @@ const {
 	idk1,
 	idk2,
 	fullnameText,
+	firstnameText,
+	lastnameText,
 	phoneText,
 	addressText,
 	emailText,
@@ -81,7 +83,8 @@ const MapsScreen = ({ google }) => {
 		phone: '',
 		comment: '',
 		address: '',
-		fullname: '',
+		firstname: '',
+		lastname: '',
 		branch_id: '',
 		arrived_at: null,
 	});
@@ -210,7 +213,8 @@ const MapsScreen = ({ google }) => {
 			phone: '',
 			address: '',
 			comment: '',
-			fullname: '',
+			firstname: '',
+			lastname: '',
 			branch_id: '',
 			arrived_at: null,
 		});
@@ -219,14 +223,15 @@ const MapsScreen = ({ google }) => {
 
 	const handleSubmit = async () => {
 		if (
-			state.fullname &&
+			state.firstname &&
+			state.lastname &&
 			state.phone &&
 			state.address &&
 			state.date &&
 			state.time
 		) {
 			try {
-				let { email, phone, address, comment, fullname } = state;
+				let { email, phone, address, comment, firstname, lastname } = state;
 				let arrived_at = new Date(state.date);
 				let split = state.time.split(':');
 				arrived_at.setHours(parseInt(split[0]));
@@ -247,7 +252,7 @@ const MapsScreen = ({ google }) => {
 					phone,
 					address,
 					comment,
-					fullname,
+					fullname: `${firstname} ${lastname}`,
 					arrived_at:
 						arrived_at.toLocaleDateString() +
 						' ' +
@@ -265,7 +270,8 @@ const MapsScreen = ({ google }) => {
 					phone: '',
 					address: '',
 					comment: '',
-					fullname: '',
+					firstname: '',
+					lastname: '',
 					branch_id: '',
 					arrived_at: null,
 				});
@@ -299,8 +305,11 @@ const MapsScreen = ({ google }) => {
 			}
 		} else {
 			let newError = {};
-			if (!state.fullname) {
-				newError = { ...newError, fullname: true };
+			if (!state.firstname) {
+				newError = { ...newError, firstname: true };
+			}
+			if (!state.lastname) {
+				newError = { ...newError, lastname: true };
 			}
 			if (!state.phone) {
 				newError = { ...newError, phone: true };
@@ -564,31 +573,61 @@ const MapsScreen = ({ google }) => {
 					) : null}
 					<Form>
 						<Form.Group controlId='formBasicFullname'>
-							<Form.Label>{fullnameText}</Form.Label>
+							<Form.Label>{firstnameText}</Form.Label>
 							<Form.Control
 								type='text'
-								value={state.fullname}
-								placeholder={`Enter ${fullnameText}`}
+								value={state.firstname}
+								placeholder={`Enter ${firstnameText}`}
 								onChange={({ target }) => {
 									setState({
 										...state,
-										fullname: target.value,
+										firstname: target.value,
 									});
 									if (!target.value) {
 										setErrorText({
 											...errorText,
-											fullname: 'Please enter full name',
+											firstname: 'Please enter full name',
 										});
 									} else {
 										setErrorText({});
 									}
 								}}
 							/>
-							{errorText.fullname ? (
+							{errorText.firstname ? (
 								<Form.Text
 									className='mt-2'
 									style={{ color: '#eb5757' }}>
-									{`Enter ${fullnameText}`}
+									{`Enter ${firstnameText}`}
+								</Form.Text>
+							) : null}
+						</Form.Group>
+
+						<Form.Group controlId='formBasicFullname'>
+							<Form.Label>{lastnameText}</Form.Label>
+							<Form.Control
+								type='text'
+								value={state.lastname}
+								placeholder={`Enter ${lastnameText}`}
+								onChange={({ target }) => {
+									setState({
+										...state,
+										lastname: target.value,
+									});
+									if (!target.value) {
+										setErrorText({
+											...errorText,
+											lastname: 'Please enter full name',
+										});
+									} else {
+										setErrorText({});
+									}
+								}}
+							/>
+							{errorText.lastname ? (
+								<Form.Text
+									className='mt-2'
+									style={{ color: '#eb5757' }}>
+									{`Enter ${lastnameText}`}
 								</Form.Text>
 							) : null}
 						</Form.Group>
