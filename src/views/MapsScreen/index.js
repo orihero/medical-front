@@ -12,6 +12,7 @@ import DateTimePicker from 'reactstrap-date-picker';
 import swal from 'sweetalert';
 import validator from 'validator';
 import { Screen3Str, url } from '../../constants';
+import moment from 'moment';
 
 let weekDays = [
 	'Sunday',
@@ -278,16 +279,16 @@ const MapsScreen = ({ google }) => {
 					Thank you!
 					
 					We look forward to servicing you.`,
-// 					text: `Thank you for scheduling your appointment for Covid-19 testing.
-// the address for your testing is:
+					// 					text: `Thank you for scheduling your appointment for Covid-19 testing.
+					// the address for your testing is:
 
-// Center Name: ${selectedStore.name}
-// Center Address: ${selectedStore.address}
-// Scheduled Visit Time: ${arrived_at}
+					// Center Name: ${selectedStore.name}
+					// Center Address: ${selectedStore.address}
+					// Scheduled Visit Time: ${arrived_at}
 
-// Please look for our tent on the parking lot of the address provided.
+					// Please look for our tent on the parking lot of the address provided.
 
-// Looking forward to servicing you.`,
+					// Looking forward to servicing you.`,
 					icon: 'success',
 				});
 				if (willDelete) {
@@ -505,15 +506,24 @@ const MapsScreen = ({ google }) => {
 													textTransform: 'capitalize',
 												}}>
 												{day} :{' '}
-												{new Date(
-													selectedStore[
-														day + '_start'
-													]
-												).toLocaleTimeString()}{' '}
+												{
+													moment(
+														selectedStore[
+															day + '_start'
+														]
+													).format('hh:mm A')
+													// 	new Date(
+													// 	selectedStore[
+													// 		day + '_start'
+													// 	]
+													// ).toLocaleTimeString()
+												}{' '}
 												-{' '}
-												{new Date(
-													selectedStore[day + '_end']
-												).toLocaleTimeString()}{' '}
+												{moment(
+														selectedStore[
+															day + '_end'
+														]
+													).format('hh:mm A')}{' '}
 											</p>
 										);
 									}
