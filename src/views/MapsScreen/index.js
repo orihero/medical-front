@@ -96,21 +96,16 @@ const MapsScreen = ({ google }) => {
 	const handleWorkTime = (start, end) => {
 		let arr = [];
 		let tmpTime = start;
-		console.log({ tmps: tmpTime < end, start, end });
+		// alert(JSON.stringify({ tmps: tmpTime < end, start, end }));
 		while (tmpTime < end) {
 			arr = [...arr, new Date(tmpTime)];
 
-			let tmpTimeHour = tmpTime.getHours();
-			let tmpTimeMinutes = tmpTime.getMinutes() + 5;
-			let tmpTimeSeconds = tmpTime.getSeconds();
-			let tmpTimeMillieconds = tmpTime.getMilliseconds();
+			let tmpTimeHour = tmpTime.hours();
+			let tmpTimeMinutes = tmpTime.minutes() + 5;
+			let tmpTimeSeconds = tmpTime.seconds();
+			let tmpTimeMillieconds = tmpTime.milliseconds();
 
-			tmpTime.setHours(
-				tmpTimeHour,
-				tmpTimeMinutes,
-				tmpTimeSeconds,
-				tmpTimeMillieconds
-			);
+			tmpTime.minutes(tmpTimeMinutes + 5);
 		}
 
 		return arr;
@@ -153,12 +148,12 @@ const MapsScreen = ({ google }) => {
 			state.date
 		) {
 			let { date } = state;
-			let start_time = new Date(
+			let startPrefix =
 				selectedStore[
 					weekDays[new Date(date).getDay()].toLowerCase() + '_start'
-				]
-			);
-			let end_time = new Date(
+				];
+			let start_time = moment(startPrefix);
+			let end_time = moment(
 				selectedStore[
 					weekDays[new Date(date).getDay()].toLowerCase() + '_end'
 				]
@@ -169,10 +164,10 @@ const MapsScreen = ({ google }) => {
 				startTime: new Date(date),
 				endTime: new Date(date),
 			};
-			workTime.startTime.setHours(start_time.getHours());
-			workTime.startTime.setMinutes(start_time.getMinutes());
-			workTime.endTime.setHours(end_time.getHours() - 5);
-			workTime.endTime.setMinutes(end_time.getMinutes());
+			workTime.startTime.setHours(start_time.hours());
+			workTime.startTime.setMinutes(start_time.minutes());
+			workTime.endTime.setHours(end_time.hours() - 5);
+			workTime.endTime.setMinutes(end_time.minutes());
 			// workTime.startTime.setHours(
 			// 	parseInt(start_time.split(':')[0]),
 			// 	parseInt(start_time.split(':')[1]),
@@ -185,8 +180,10 @@ const MapsScreen = ({ google }) => {
 			// 	0,
 			// 	0
 			// );
-			console.log({ start_time, end_time });
-			setTimes([...handleWorkTime(start_time, end_time)]);
+			// alert(JSON.stringify({ start_time, end_time, startPrefix }));
+			let wTimes = [...handleWorkTime(start_time, end_time)];
+			// alert(JSON.stringify(wTimes));
+			setTimes(wTimes);
 			checkOccupations();
 		}
 	}, [selectedStore, state.date]);
@@ -222,6 +219,7 @@ const MapsScreen = ({ google }) => {
 	};
 
 	const handleSubmit = async () => {
+		console.log({ TIME: state.time });
 		if (
 			state.firstname &&
 			state.lastname &&
@@ -231,7 +229,14 @@ const MapsScreen = ({ google }) => {
 			state.time
 		) {
 			try {
-				let { email, phone, address, comment, firstname, lastname } = state;
+				let {
+					email,
+					phone,
+					address,
+					comment,
+					firstname,
+					lastname,
+				} = state;
 				let arrived_at = new Date(state.date);
 				let split = state.time.split(':');
 				arrived_at.setHours(parseInt(split[0]));
@@ -509,30 +514,24 @@ const MapsScreen = ({ google }) => {
 										!!selectedStore[key]
 									) {
 										let day = key.split('_')[0];
+										let start = moment(
+											selectedStore[day + '_start']
+										).format('hh:mm A');
+										let end = moment(
+											selectedStore[day + '_end']
+										).format('hh:mm A');
+										if (
+											start.toString() ===
+												'Invalid Date' ||
+											end.toString() === 'Invalid Date'
+										)
+											return null;
 										return (
 											<p
 												style={{
 													textTransform: 'capitalize',
 												}}>
-												{day} :{' '}
-												{
-													moment(
-														selectedStore[
-															day + '_start'
-														]
-													).format('hh:mm A')
-													// 	new Date(
-													// 	selectedStore[
-													// 		day + '_start'
-													// 	]
-													// ).toLocaleTimeString()
-												}{' '}
-												-{' '}
-												{moment(
-														selectedStore[
-															day + '_end'
-														]
-													).format('hh:mm A')}{' '}
+												{day} : {start} - {end}{' '}
 											</p>
 										);
 									}
@@ -707,14 +706,6 @@ const MapsScreen = ({ google }) => {
 								});
 								let dateNY = new Date(dayInNY);
 								dateNY.setDate(dateNY.getDate() + 1);
-								console.log(
-									new Date(date) < new Date(Date.now),
-									{
-										date,
-										todaysDate: new Date(Date.now()),
-										dayInNY,
-									}
-								);
 
 								if (
 									new Date(date).getDate() < dateNY.getDate()
@@ -757,6 +748,7 @@ const MapsScreen = ({ google }) => {
 								as='select'
 								value={state.time}
 								placeholder={`Select visit time`}
+								type='select'
 								onChange={({ target }) =>
 									setState({ ...state, time: target.value })
 								}>
@@ -768,14 +760,13 @@ const MapsScreen = ({ google }) => {
 											occupiedTime.getMinutes() ===
 												item.getMinutes()
 									);
-									return (
-										<option key={key} disabled={occupied}>
-											{item.getMinutes() >= 10
-												? `${item.getHours()}:${item.getMinutes()}`
-												: `${item.getHours()}:0${item.getMinutes()}`}{' '}
-											{occupied ? 'Occupied' : ''}
-										</option>
-									);
+									let time =
+										item.getMinutes() >= 10
+											? `${item.getHours()}:${item.getMinutes()}`
+											: `${item.getHours()}:0${item.getMinutes()} ${
+													occupied ? 'Occupied' : ''
+											  }`;
+									return <option key={key}>{time}</option>;
 								})}
 							</Form.Control>
 						</Form.Group>
