@@ -13,6 +13,7 @@ import swal from 'sweetalert';
 import validator from 'validator';
 import { Screen3Str, url } from '../../constants';
 import moment from 'moment';
+import {getJsonFromUrl} from '../../utils/event-utils'
 
 let weekDays = [
 	'Sunday',
@@ -85,6 +86,7 @@ const MapsScreen = ({ google }) => {
 		address: '',
 		firstname: '',
 		lastname: '',
+		type: null,
 		branch_id: '',
 		arrived_at: null,
 	});
@@ -116,6 +118,19 @@ const MapsScreen = ({ google }) => {
 	};
 
 	const effect = async () => {
+		const obj = getJsonFromUrl(window.location.href)
+		let tmpType = null
+		if(obj.param === '0'){
+			tmpType = 0
+		}
+		if(obj.param === '1'){
+			tmpType = 1
+		}
+		if(obj.param === '2'){
+			tmpType = 2
+		}
+		setState({...state, type: tmpType})
+
 		try {
 			let { data } = await axios.get(`${url}/branches`);
 
@@ -206,6 +221,7 @@ const MapsScreen = ({ google }) => {
 	const handleClose = () => {
 		setModalShow(false);
 		setState({
+			...state,
 			email: '',
 			phone: '',
 			address: '',
@@ -236,6 +252,7 @@ const MapsScreen = ({ google }) => {
 					comment,
 					firstname,
 					lastname,
+					type
 				} = state;
 				let arrived_at = new Date(state.date);
 				let split = state.time.split(':');
@@ -257,15 +274,14 @@ const MapsScreen = ({ google }) => {
 					phone,
 					address,
 					comment,
+					type,
 					fullname: `${firstname} ${lastname}`,
 					arrived_at:
 						arrived_at.toLocaleDateString() +
 						' ' +
 						arrived_at.toLocaleTimeString(),
 					branch_id,
-					type: 0,
 				};
-				console.log('state: ', state, { arrived_at });
 				console.log('submitData: ', submitData);
 				let res = await axios.post(`${url}/requests`, submitData);
 				console.log('res: ', res.data);
@@ -278,6 +294,7 @@ const MapsScreen = ({ google }) => {
 					firstname: '',
 					lastname: '',
 					branch_id: '',
+					type: null,
 					arrived_at: null,
 				});
 				setModalShow(false);
@@ -303,7 +320,7 @@ const MapsScreen = ({ google }) => {
 					icon: 'success',
 				});
 				if (willDelete) {
-					window.location.href = `https://covid.accureference.com/appointment?requestId=${res.data.id}`;
+					window.location.href = `https://covid.accureference.com/appointment?type=1&requestId=${res.data.id}`
 				}
 			} catch (err) {
 				setErrorText({ request: true });
