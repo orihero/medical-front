@@ -119,7 +119,7 @@ const MapsScreen = ({ google }) => {
 
 	const effect = async () => {
 		const obj = getJsonFromUrl(window.location.href)
-		let tmpType = null
+		let tmpType = 0
 		if(obj.param === '0'){
 			tmpType = 0
 		}
