@@ -235,7 +235,6 @@ const MapsScreen = ({ google }) => {
 	};
 
 	const handleSubmit = async () => {
-		console.log({ TIME: state.time });
 		if (
 			state.firstname &&
 			state.lastname &&
@@ -285,6 +284,23 @@ const MapsScreen = ({ google }) => {
 				console.log('submitData: ', submitData);
 				let res = await axios.post(`${url}/requests`, submitData);
 				console.log('res: ', res.data);
+				let res1 = await fetch('https://esign.drensys.com/api/generate/main?fname=Khurshid&lname=Jumaboev&date_of_birth=Jul 19, 1997&gender=Male&ssn=662-11-2234&cellphone=(929) 306-9847&email=kj@drensys.com (306-9847&email=kj@drensys.com)&address=3235 Emmons Avenue&apt=4C&city=Brooklyn&state=NY&zip=11235', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': 'Bearer 0dd679dd9c66d0d17b6d25600f6a256a769e3974837dfad9144ad1a3a2e3d180'
+					}
+				})
+				res1 = await res1.json()
+				// let res1 = await axios.post(
+				// 	'https://esign.drensys.com/api/generate/main?fname=Khurshid&lname=Jumaboev&date_of_birth=Jul 19, 1997&gender=Male&ssn=662-11-2234&cellphone=(929) 306-9847&email=kj@drensys.com (306-9847&email=kj@drensys.com)&address=3235 Emmons Avenue&apt=4C&city=Brooklyn&state=NY&zip=11235',
+				// 	{}, {
+				// 	Authorization: 'Bearer 0dd679dd9c66d0d17b6d25600f6a256a769e3974837dfad9144ad1a3a2e3d180'
+				// })
+				console.log('res1: ', res1)
+				// window.location.href(res1.link)
+				// window.history.location(res1.link)
+				window.open(res1.link, '_blank')
 				setErrorText({});
 				setState({
 					email: '',
