@@ -160,6 +160,17 @@ code {
 	align-items: center;
 }
 
+.forMaskedInput{
+	height: 42px;
+	border: 1px solid #e6e6e6;
+	background: none;
+	width: 100%;
+	padding: 0 18px;
+	outline: none;
+}
+
+/* .forMaskedInput:focus */
+
 @media (min-width: 768px) {
 	.scheduleContainer {
 		width: 1000px;

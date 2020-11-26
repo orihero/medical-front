@@ -3,7 +3,7 @@ import { GoogleApiWrapper, Map, Marker } from 'google-maps-react';
 import React, { useEffect, useState } from 'react';
 import { Form, Modal } from 'react-bootstrap';
 import LoadingButton from 'react-bootstrap-button-loader';
-import MaskedInput from 'react-bootstrap-maskedinput';
+import MaskedInput from 'react-maskedinput'
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { MdLocationOn } from 'react-icons/md';
@@ -60,6 +60,7 @@ const {
 	lastnameText,
 	phoneText,
 	addressText,
+	dateOfBirthText,
 	emailText,
 } = Screen3Str;
 
@@ -82,6 +83,7 @@ const MapsScreen = ({ google }) => {
 	const [state, setState] = useState({
 		email: '',
 		phone: '',
+		dateOfBirth: '',
 		comment: '',
 		address: '',
 		firstname: '',
@@ -224,6 +226,7 @@ const MapsScreen = ({ google }) => {
 			...state,
 			email: '',
 			phone: '',
+			dateOfBirth: '',
 			address: '',
 			comment: '',
 			firstname: '',
@@ -238,6 +241,7 @@ const MapsScreen = ({ google }) => {
 		if (
 			state.firstname &&
 			state.lastname &&
+			state.dateOfBirth &&
 			state.phone &&
 			state.address &&
 			state.date &&
@@ -247,6 +251,7 @@ const MapsScreen = ({ google }) => {
 				let {
 					email,
 					phone,
+					dateOfBirth,
 					address,
 					comment,
 					firstname,
@@ -271,6 +276,7 @@ const MapsScreen = ({ google }) => {
 				let submitData = {
 					email,
 					phone,
+					datebirth: dateOfBirth,
 					address,
 					comment,
 					type,
@@ -288,6 +294,7 @@ const MapsScreen = ({ google }) => {
 				setState({
 					email: '',
 					phone: '',
+					dateOfBirth: '',
 					address: '',
 					comment: '',
 					firstname: '',
@@ -306,16 +313,6 @@ const MapsScreen = ({ google }) => {
 					Thank you!
 					
 					We look forward to servicing you.`,
-					// 					text: `Thank you for scheduling your appointment for Covid-19 testing.
-					// the address for your testing is:
-
-					// Center Name: ${selectedStore.name}
-					// Center Address: ${selectedStore.address}
-					// Scheduled Visit Time: ${arrived_at}
-
-					// Please look for our tent on the parking lot of the address provided.
-
-					// Looking forward to servicing you.`,
 					icon: 'success',
 				});
 				if (willDelete) {
@@ -331,6 +328,9 @@ const MapsScreen = ({ google }) => {
 			}
 			if (!state.lastname) {
 				newError = { ...newError, lastname: true };
+			}
+			if (!state.dateOfBirth) {
+				newError = { ...newError, dateOfBirth: true };
 			}
 			if (!state.phone) {
 				newError = { ...newError, phone: true };
@@ -587,7 +587,7 @@ const MapsScreen = ({ google }) => {
 						</p>
 					) : null}
 					<Form>
-						<Form.Group controlId='formBasicFullname'>
+						<Form.Group controlId='formBasicFirstname'>
 							<Form.Label>{firstnameText}</Form.Label>
 							<Form.Control
 								type='text'
@@ -601,7 +601,7 @@ const MapsScreen = ({ google }) => {
 									if (!target.value) {
 										setErrorText({
 											...errorText,
-											firstname: 'Please enter full name',
+											firstname: `Please enter ${firstnameText}`,
 										});
 									} else {
 										setErrorText({});
@@ -617,7 +617,7 @@ const MapsScreen = ({ google }) => {
 							) : null}
 						</Form.Group>
 
-						<Form.Group controlId='formBasicFullname'>
+						<Form.Group controlId='formBasicLastname'>
 							<Form.Label>{lastnameText}</Form.Label>
 							<Form.Control
 								type='text'
@@ -631,7 +631,7 @@ const MapsScreen = ({ google }) => {
 									if (!target.value) {
 										setErrorText({
 											...errorText,
-											lastname: 'Please enter full name',
+											lastname: `Please enter ${lastnameText}`,
 										});
 									} else {
 										setErrorText({});
@@ -643,6 +643,57 @@ const MapsScreen = ({ google }) => {
 									className='mt-2'
 									style={{ color: '#eb5757' }}>
 									{`Enter ${lastnameText}`}
+								</Form.Text>
+							) : null}
+						</Form.Group>
+
+						<Form.Group controlId='formBasicDateOfBirth'>
+							<Form.Label>{dateOfBirthText}</Form.Label>
+							<MaskedInput
+								mask='11-11-1111'
+								className='form-control'
+								// className='forMaskedInput'
+								value={state.dateOfBirth}
+								placeholder='DD-mm-YYYY'
+								onChange={({ target }) => {
+									setState({
+										...state,
+										dateOfBirth: target.value
+									})
+									if (!target.value) {
+										setErrorText({
+											...errorText,
+											dateOfBirth: 'Please enter date of birth',
+										});
+									} else {
+										setErrorText({});
+									}
+								}}
+							/>
+							{/* <Form.Control
+								type='text'
+								value={state.dateOfBirth}
+								placeholder={`Enter ${dateOfBirthText}`}
+								onChange={({ target }) => {
+									setState({
+										...state,
+										dateOfBirth: target.value,
+									});
+									if (!target.value) {
+										setErrorText({
+											...errorText,
+											dateOfBirth: 'Please enter date of birth',
+										});
+									} else {
+										setErrorText({});
+									}
+								}}
+							/> */}
+							{errorText.dateOfBirth ? (
+								<Form.Text
+									className='mt-2'
+									style={{ color: '#eb5757' }}>
+									{`Enter ${dateOfBirthText}`}
 								</Form.Text>
 							) : null}
 						</Form.Group>
