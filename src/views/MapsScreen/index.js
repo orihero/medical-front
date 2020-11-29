@@ -654,7 +654,7 @@ const MapsScreen = ({ google }) => {
 								className='form-control'
 								// className='forMaskedInput'
 								value={state.dateOfBirth}
-								placeholder='DD-mm-YYYY'
+								placeholder='DD-MM-YYYY'
 								onChange={({ target }) => {
 									setState({
 										...state,
@@ -792,12 +792,17 @@ const MapsScreen = ({ google }) => {
 											new Date(date).getDay()
 										].toLowerCase() + '_works'
 									]
-								)
-									setState({ ...state, date });
+								) {
+									setState({ ...state, date })
+								}
 								else {
 									alert(
 										'You cannot make an appointment on this day!'
 									);
+									setState({
+										...state,
+										date: '',
+									});
 								}
 							}}
 						/>
